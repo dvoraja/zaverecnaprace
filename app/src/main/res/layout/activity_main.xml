@@ -60,6 +60,6 @@
         android:width="80dp"
         app:layout_constraintBottom_toTopOf="@id/btn_add_item"
         app:layout_constraintEnd_toStartOf="@id/btn_category"/>
-
+    
 
 </androidx.constraintlayout.widget.ConstraintLayout>

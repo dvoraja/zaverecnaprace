@@ -44,6 +44,20 @@ class TodoAdapter(private val todoItems: MutableList<Todo>) : RecyclerView.Adapt
         holder.itemView.apply {
             txt_item.text = currentTodo.title
             txt_item_date.text = currentTodo.date
+            txt_item_category.text = currentTodo.category
+
+            when (currentTodo.category) {
+                "Finance" -> img_category.setImageResource(R.drawable.ic_category_finance)
+                "Health" -> img_category.setImageResource(R.drawable.ic_category_health)
+                "Home" -> img_category.setImageResource(R.drawable.ic_category_home)
+                "Other" -> img_category.setImageResource(R.drawable.ic_category_other)
+                "School" -> img_category.setImageResource(R.drawable.ic_category_school)
+                "Shopping" -> img_category.setImageResource(R.drawable.ic_category_shopping)
+                "Work" -> img_category.setImageResource(R.drawable.ic_category_work)
+                else -> {
+                    img_category.setImageResource(R.drawable.ic_category_other)
+                }
+            }
             cb_item.isChecked = currentTodo.isDone
             toggleDone(txt_item, txt_item_date,currentTodo.isDone)
             cb_item.setOnCheckedChangeListener { _, isChecked ->

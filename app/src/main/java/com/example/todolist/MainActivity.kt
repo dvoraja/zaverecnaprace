@@ -1,5 +1,6 @@
 package com.example.todolist
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
@@ -31,6 +32,8 @@ class MainActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener/*, 
 
     var date = ""
 
+    var category = "Other"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -44,9 +47,11 @@ class MainActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener/*, 
         btn_add_item.setOnClickListener {
             val newItem = et_newitem.text.toString()
             if(newItem.isNotEmpty()){
-                val todo = Todo(newItem, date)
+                val todo = Todo(newItem, date, category)
                 todoAdapter.addTodo(todo)
                 et_newitem.text.clear()
+                date = ""
+                category = "Other"
             }
         }
         btn_delete_finished.setOnClickListener {
@@ -62,13 +67,19 @@ class MainActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener/*, 
 
     }
     fun showCategory(){
-        val categoryDialog = Dialog(this)
-        categoryDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        categoryDialog.setContentView(R.layout.category)
-        btn_category.setOnClickListener{
-          //  categoryDialog.dismiss()
+        val listcategory = arrayOf("Finance", "Health", "Home", "Other", "School","Shopping", "Work")
+        val cbuilder = AlertDialog.Builder(this@MainActivity)
+        cbuilder.setTitle("Choose category")
+        cbuilder.setSingleChoiceItems(listcategory, -1) { dialogInterface, i ->
+            category = listcategory[i]
+            dialogInterface.dismiss()
         }
-        categoryDialog.show();
+        cbuilder.setNeutralButton("Cancel") { dialog, which ->
+            dialog.cancel()
+        }
+
+        val mDialog = cbuilder.create()
+        mDialog.show()
     }
 
     private fun getDateTimeCalendar() {
