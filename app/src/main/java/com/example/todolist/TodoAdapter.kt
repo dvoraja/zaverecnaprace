@@ -22,12 +22,10 @@ class TodoAdapter(private val todoItems: MutableList<Todo>) : RecyclerView.Adapt
         notifyItemInserted(todoItems.size - 1)
     }
 
-    fun deleteDone(){
-        todoItems.removeAll {todo ->
+    fun getDone() =
+        todoItems.filter {todo ->
             todo.isDone
         }
-        notifyDataSetChanged()
-    }
 
     private fun toggleDone(txt_item: TextView, txt_item_date:TextView, isDone: Boolean){
         if(isDone){

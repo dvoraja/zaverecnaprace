@@ -14,9 +14,11 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item.*
 import java.util.*
 
-class MainActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener/*, TimePickerDialog.OnTimeSetListener*/{
+class MainActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 
     private lateinit var todoAdapter: TodoAdapter
+
+    val todoList = mutableListOf<Todo>()
 
     var day = 0
     var month = 0
@@ -27,8 +29,6 @@ class MainActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener/*, 
     var savedDay = 0
     var savedMonth = 0
     var savedYear = 0
-   // var savedHour = 0
-   // var savedMinute = 0
 
     var date = ""
 
@@ -36,26 +36,37 @@ class MainActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener/*, 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val database by lazy { TodoRoomDatabase.getDatabase(applicationContext)}
+        val repository by lazy { TodoRepository(database.todoDao()) }
+        val modelFactory = TodoViewModelFactory(repository)
+        val model: TodoViewModel = modelFactory.create(TodoViewModel::class.java)
+
         setContentView(R.layout.activity_main)
-        todoAdapter = TodoAdapter(mutableListOf())
+
+        todoAdapter = TodoAdapter(todoList)
 
         rv_items.adapter = todoAdapter
         rv_items.layoutManager = LinearLayoutManager(this)
 
-
+        model.allTodo.observe(this) {
+            todoList.clear()
+            todoList.addAll(it)
+            todoAdapter.notifyDataSetChanged()
+        }
 
         btn_add_item.setOnClickListener {
             val newItem = et_newitem.text.toString()
             if(newItem.isNotEmpty()){
                 val todo = Todo(newItem, date, category)
-                todoAdapter.addTodo(todo)
+                model.insert(todo)
                 et_newitem.text.clear()
                 date = ""
                 category = "Other"
             }
         }
         btn_delete_finished.setOnClickListener {
-            todoAdapter.deleteDone()
+            model.deleteTodos(todoAdapter.getDone())
         }
         btn_category.setOnClickListener {
             showCategory()
@@ -87,8 +98,6 @@ class MainActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener/*, 
         day = cal.get(Calendar.DAY_OF_MONTH)
         month = cal.get(Calendar.MONTH)
         year = cal.get(Calendar.YEAR)
-     //   hour = cal.get(Calendar.HOUR)
-     //   minute = cal.get(Calendar.MINUTE)
     }
 
     private fun pickDate(){
@@ -106,15 +115,7 @@ class MainActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener/*, 
 
         getDateTimeCalendar()
 
-       // TimePickerDialog(this, this, hour, minute, true).show()
-        date = "$savedDay.$savedMonth.$savedYear"//\n$savedHour:$savedMinute"
+        date = "$savedDay.$savedMonth.$savedYear"
 
     }
-
- /*   override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-        savedHour = hourOfDay
-        savedMinute = minute
-
-
-    }*/
 }

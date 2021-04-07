@@ -12,4 +12,6 @@ class TodoRepository(private val todoDao: TodoDao) {
     suspend fun insert(todo: Todo) {
         todoDao.insert(todo)
     }
+
+    suspend fun deleteTodos(todos: List<Todo>) = todoDao.deleteTodos(todos)
 }
